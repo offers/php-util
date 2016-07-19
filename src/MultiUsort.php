@@ -19,24 +19,38 @@ class MultiUsort
         }
     }
 
-    public function compare($a, $b)
+    public function __invoke($a, $b)
     {
         $returnVal = 0;
         $comparisonField = $this->fields[$this->level];
         $order = $this->orders[$this->level];
 
-        if ($a->$comparisonField > $b->$comparisonField) {
+        $aComparisonField = $this->getComparisonField($a, $comparisonField);
+        $bComparisonField = $this->getComparisonField($b, $comparisonField);
+
+        if ($aComparisonField > $bComparisonField) {
             $returnVal = 1;
-        } else if ($a->$comparisonField < $b->$comparisonField) {
+        } else if ($aComparisonField < $bComparisonField) {
             $returnVal = -1;
         } else {
             if ($this->level < count($this->fields) - 1) {
                 $this->level++;
-                return $this->compare($a, $b);
+                return $this->__invoke($a, $b);
             }
         }
         $returnVal *= $order;
         $this->level = 0;
         return $returnVal;
+    }
+
+    private function getComparisonField($item, $field)
+    {
+        if (is_object($item)) {
+            return $item->$field;
+        }
+        if (is_array($item) && isset($item[$field])) {
+            return $item[$field];
+        }
+        throw new \RuntimeException("unable to find comparison field $field");
     }
 }
