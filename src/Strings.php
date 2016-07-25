@@ -11,7 +11,7 @@ class Strings
      * @param int $len
      * @return string
      */
-    public static function ellipsize($str, $len): string
+    public static function ellipsize($str, $len)
     {
         //don't trim the string if it will fit in the requested $len
         if($len >= strlen($str)) {
